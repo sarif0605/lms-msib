@@ -180,6 +180,46 @@
             background: #fef3c7;
             color: #b45309;
         }
+
+        /* Helper Classes */
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+
+        .hover-translate-y:hover {
+            transform: translateY(-5px);
+        }
+
+        .hover-shadow-lg:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        .hover-text-primary:hover {
+            color: var(--primary) !important;
+        }
+
+        .py-2-5 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .smallest {
+            font-size: 0.7rem;
+        }
+
+        /* Dashboard Cards specific */
+        .card-img-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img-container img {
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-img-container img {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 

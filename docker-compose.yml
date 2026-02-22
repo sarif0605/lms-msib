@@ -12,20 +12,28 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
     container_name: lms-app
     restart: on-failure
     ports:
-      - "8080:8080"
+      - "9000:9000"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/lms_db?allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: lms_user
       SPRING_DATASOURCE_PASSWORD: lms_password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_FLYWAY_ENABLED: "true"
+      SERVER_PORT: "9000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   mysql_data:

@@ -71,22 +71,30 @@
             <h4 class="fw-bold mb-4">Your Courses</h4>
             <div class="row g-4">
                 <div th:each="enrollment : ${enrollments}" class="col-lg-4 col-md-6">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 group">
+                    <div
+                        class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden group hover-translate-y transition-all">
                         <div class="position-relative">
-                            <img th:src="${enrollment.course.thumbnail != null ? enrollment.course.thumbnail : 'https://img.freepik.com/free-vector/learning-concept-illustration_114360-6186.jpg'}"
-                                class="card-img-top" alt="Course Thumbnail" style="height: 180px; object-fit: cover;">
+                            <a th:href="@{'/courses/' + ${enrollment.course.id} + '/learn'}">
+                                <img th:src="${enrollment.course.thumbnail != null ? enrollment.course.thumbnail : 'https://img.freepik.com/free-vector/learning-concept-illustration_114360-6186.jpg'}"
+                                    class="card-img-top" alt="Course Thumbnail"
+                                    style="height: 180px; object-fit: cover;">
+                            </a>
                             <div class="position-absolute top-0 end-0 m-3">
                                 <span th:if="${enrollment.isCompleted}"
-                                    class="badge bg-success rounded-pill px-3 shadow-sm">Completed</span>
+                                    class="badge bg-success rounded-pill px-3 shadow-sm animate__animated animate__pulse animate__infinite">Completed</span>
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <h5 class="card-title fw-bold mb-2 h-100" th:text="${enrollment.course.title}">Course Title
-                            </h5>
+                            <a th:href="@{'/courses/' + ${enrollment.course.id} + '/learn'}"
+                                class="text-decoration-none">
+                                <h5 class="card-title fw-bold mb-2 text-dark hover-text-primary transition-all"
+                                    th:text="${enrollment.course.title}">Course Title
+                                </h5>
+                            </a>
                             <div class="d-flex align-items-center gap-2 mb-4">
                                 <img th:src="'https://ui-avatars.com/api/?name=' + ${enrollment.course.instructor.fullName} + '&background=random'"
                                     class="rounded-circle" style="width: 24px; height: 24px;">
-                                <span class="text-muted small"
+                                <span class="text-muted smaller"
                                     th:text="${enrollment.course.instructor.fullName}">Instructor</span>
                             </div>
 
@@ -95,23 +103,24 @@
                                 <span class="smaller fw-bold text-primary"
                                     th:text="${#numbers.formatDecimal(enrollment.progressPercentage, 0, 0)} + '%'">0%</span>
                             </div>
-                            <div class="progress mb-4" style="height: 6px; border-radius: 3px;">
-                                <div class="progress-bar" role="progressbar"
+                            <div class="progress mb-4"
+                                style="height: 8px; border-radius: 4px; background-color: #f0f2f5;">
+                                <div class="progress-bar bg-primary shadow-sm" role="progressbar"
                                     th:style="'width: ' + ${enrollment.progressPercentage} + '%'"
                                     th:aria-valuenow="${enrollment.progressPercentage}" aria-valuemin="0"
                                     aria-valuemax="100"></div>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <a th:href="@{'/courses/' + ${enrollment.course.id}}"
-                                    class="btn btn-primary rounded-pill py-2 fw-bold">
-                                    <i class="bi bi-play-circle-fill me-2"></i>Continue
+                                <a th:href="@{'/courses/' + ${enrollment.course.id} + '/learn'}"
+                                    class="btn btn-primary rounded-pill py-2-5 fw-bold shadow-sm hover-shadow-lg transition-all">
+                                    <i class="bi bi-play-fill me-2"></i>Continue Learning
                                 </a>
                                 <form th:if="${enrollment.isCompleted}"
                                     th:action="@{'/enrollments/' + ${enrollment.id} + '/certificate'}" method="post">
                                     <button type="submit"
-                                        class="btn btn-outline-success w-100 rounded-pill py-2 small fw-bold mt-2">
-                                        <i class="bi bi-award me-2"></i>Certificate
+                                        class="btn btn-outline-success w-100 rounded-pill py-2 small fw-bold mt-2 hover-bg-success-subtle transition-all">
+                                        <i class="bi bi-award me-2"></i>Download Certificate
                                     </button>
                                 </form>
                             </div>
