@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title th:text="${isEdit ? 'Edit Course' : 'Create New Course'} + ' - LMSHub'">Create New Course</title>
+</head>
+
+<body>
+    <section>
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="header-section mb-5 animate__animated animate__fadeIn">
+                        <span class="role-badge badge-instructor mb-2 d-inline-block">Instructor Studio</span>
+                        <h1 class="fw-bold" th:text="${isEdit ? 'Refine Your Masterpiece' : 'Create Your Next Course'}">
+                            Create New Course</h1>
+                        <p class="text-muted">Share your knowledge with millions of students around the world.</p>
+                    </div>
+
+                    <form th:action="${isEdit ? '/instructor/courses/' + course.id : '/instructor/courses'}"
+                        method="post" id="courseForm">
+                        <div class="row g-4 mb-5">
+                            <!-- Basic Info -->
+                            <div class="col-lg-7">
+                                <div class="card p-4 border-0 shadow-sm rounded-4 h-100">
+                                    <div class="card-body">
+                                        <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                                            <i class="bi bi-info-circle text-primary"></i> Basic Information
+                                        </h5>
+                                        <div class="mb-4">
+                                            <label
+                                                class="form-label small fw-bold text-muted uppercase tracking-wider">Course
+                                                Title</label>
+                                            <input type="text" name="title"
+                                                class="form-control form-control-lg rounded-3 border-2"
+                                                th:value="${course?.title}" placeholder="e.g. Master Modern Web Design"
+                                                required>
+                                        </div>
+                                        <div class="mb-0">
+                                            <label
+                                                class="form-label small fw-bold text-muted uppercase tracking-wider">Course
+                                                Description</label>
+                                            <textarea name="description" class="form-control rounded-3 border-2"
+                                                rows="6" th:text="${course?.description}"
+                                                placeholder="Tell your students what they will achieve..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pricing & Media -->
+                            <div class="col-lg-5">
+                                <div class="card p-4 border-0 shadow-sm rounded-4 h-100 bg-light-subtle">
+                                    <div class="card-body">
+                                        <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                                            <i class="bi bi-gear-wide-connected text-primary"></i> Course Settings
+                                        </h5>
+                                        <div class="mb-4">
+                                            <label class="form-label small fw-bold text-muted">Course Price
+                                                (USD)</label>
+                                            <div class="input-group">
+                                                <span
+                                                    class="input-group-text bg-white border-2 border-end-0 rounded-start-3">$</span>
+                                                <input type="number" step="0.01" name="price"
+                                                    class="form-control form-control-lg border-2 border-start-0 rounded-end-3"
+                                                    th:value="${course?.price}" placeholder="0.00" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label small fw-bold text-muted">Thumbnail URL</label>
+                                            <input type="url" name="thumbnail" class="form-control rounded-3 border-2"
+                                                th:value="${course?.thumbnail}"
+                                                placeholder="https://image-url.com/thumbnail.jpg">
+                                            <div class="form-text smaller">Use a high-quality 16:9 image.</div>
+                                        </div>
+                                        <div class="p-3 bg-white rounded-3 border border-2 border-dashed text-center">
+                                            <i class="bi bi-image text-muted fs-3"></i>
+                                            <p class="smaller text-muted mb-0 mt-2">Thumbnail preview will appear here
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Curriculum section -->
+                        <div class="curriculum-header mb-4 d-flex align-items-center justify-content-between">
+                            <h4 class="fw-bold mb-0">Course Curriculum</h4>
+                            <button type="button" id="addChapterBtn"
+                                class="btn btn-primary rounded-pill px-4 shadow-sm">
+                                <i class="bi bi-plus-lg me-2"></i>Add Chapter
+                            </button>
+                        </div>
+
+                        <div id="chaptersContainer" class="mb-5">
+                            <div th:each="existingChapter, iter : ${isEdit ? course.chapters : #lists.toList({null})}"
+                                class="chapter-card card border-0 shadow-sm p-4 mb-4 rounded-4 position-relative overflow-hidden">
+
+                                <div
+                                    class="chapter-badge position-absolute top-0 start-0 bg-primary text-white px-3 py-1 rounded-bottom-end small fw-bold">
+                                    Chapter <span class="chapter-index" th:text="${iter.index + 1}">1</span>
+                                </div>
+
+                                <button th:if="${iter.index > 0 or isEdit}" type="button"
+                                    class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-3 border-0 rounded-circle"
+                                    onclick="this.parentElement.remove()">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+
+                                <div class="row g-4 mt-2">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Title</label>
+                                            <input type="text" name="chapterTitles" class="form-control rounded-3"
+                                                th:value="${existingChapter?.title}" placeholder="Introduction to..."
+                                                required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Video URL</label>
+                                            <input type="url" name="chapterVideos" class="form-control rounded-3"
+                                                th:value="${existingChapter?.videoUrl}"
+                                                placeholder="https://youtube.com/...">
+                                        </div>
+                                        <div class="mb-0">
+                                            <label class="form-label small fw-bold">Lesson Content</label>
+                                            <textarea name="chapterContents" class="form-control rounded-3" rows="4"
+                                                th:text="${existingChapter?.content}"
+                                                placeholder="Elaborate on the chapter topic..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-4">
+                                            <label class="form-label small fw-bold text-indigo">Practical Assignment
+                                                (Optional)</label>
+                                            <textarea name="chapterAssignments"
+                                                class="form-control rounded-3 border-indigo-subtle bg-indigo-subtle"
+                                                rows="3" th:text="${existingChapter?.assignment}"
+                                                placeholder="What should students practice?"></textarea>
+                                        </div>
+
+                                        <!-- Quiz Section -->
+                                        <div class="quiz-section bg-light rounded-4 p-3 border">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="fw-bold mb-0 small"><i
+                                                        class="bi bi-patch-question me-2"></i>Knowledge Check</h6>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-link text-decoration-none p-0 add-question-btn font-monospace smaller fw-bold">
+                                                    + ADD QUESTION
+                                                </button>
+                                            </div>
+                                            <div class="questions-container d-grid gap-3">
+                                                <div th:if="${existingChapter?.quiz != null}"
+                                                    th:each="q, qIter : ${existingChapter?.quiz?.questions}"
+                                                    class="question-item bg-white p-3 rounded-3 shadow-sm border position-relative">
+                                                    <button type="button"
+                                                        class="btn-close btn-sm position-absolute top-0 end-0 mt-2 me-2 remove-question-btn"></button>
+                                                    <div class="mb-3">
+                                                        <input type="text"
+                                                            class="form-control form-control-sm question-text fw-bold border-0 border-bottom rounded-0 px-0"
+                                                            th:value="${q.text}" placeholder="Your question here..."
+                                                            required>
+                                                    </div>
+                                                    <div class="choices-list">
+                                                        <div th:each="c, cIter : ${q.choices}"
+                                                            class="choice-item mb-2 d-flex align-items-center gap-2">
+                                                            <input type="radio"
+                                                                th:name="'correct_' + ${iter.index} + '_' + ${qIter.index}"
+                                                                th:checked="${c.isCorrect}" class="form-check-input">
+                                                            <input type="text"
+                                                                class="form-control form-control-sm rounded-pill border-0 bg-light"
+                                                                th:value="${c.text}" placeholder="Choice..." required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="chapterQuizzes" class="quiz-json-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sticky-bottom bg-white py-4 border-top shadow-lg mt-5"
+                            style="z-index: 1000; margin-left: -50px; margin-right: -50px; padding-left: 50px; padding-right: 50px;">
+                            <div class="container d-flex align-items-center justify-content-between">
+                                <div class="text-muted d-none d-md-block">
+                                    <i class="bi bi-cloud-check-fill me-2"></i>Changes are saved locally
+                                </div>
+                                <div class="d-flex gap-3">
+                                    <a href="/dashboard"
+                                        class="btn btn-link text-decoration-none text-muted fw-bold">Discard Changes</a>
+                                    <button type="submit"
+                                        class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow">
+                                        <i class="bi bi-rocket-takeoff me-2"></i>Publish Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function updateQuizJson(chapterCard) {
+                const quizInput = chapterCard.querySelector('.quiz-json-input');
+                const questions = [];
+                chapterCard.querySelectorAll('.question-item').forEach(qItem => {
+                    const choices = [];
+                    qItem.querySelectorAll('.choice-item').forEach((cItem, cIdx) => {
+                        choices.push({
+                            text: cItem.querySelector('input[type="text"]').value,
+                            isCorrect: cItem.querySelector('input[type="radio"]').checked
+                        });
+                    });
+                    questions.push({
+                        text: qItem.querySelector('.question-text').value,
+                        choices: choices
+                    });
+                });
+                quizInput.value = questions.length > 0 ? JSON.stringify({ title: "Chapter Quiz", questions: questions }) : "";
+            }
+
+            function createQuestionElement() {
+                const id = Date.now();
+                const div = document.createElement('div');
+                div.className = 'question-item bg-white p-3 rounded-3 shadow-sm border position-relative animate__animated animate__zoomIn';
+                div.innerHTML = `
+                    <button type="button" class="btn-close btn-sm position-absolute top-0 end-0 mt-2 me-2 remove-question-btn"></button>
+                    <div class="mb-3">
+                        <input type="text" class="form-control form-control-sm question-text fw-bold border-0 border-bottom rounded-0 px-0" placeholder="Your question here..." required>
+                    </div>
+                    <div class="choices-list">
+                        <div class="choice-item mb-2 d-flex align-items-center gap-2">
+                            <input type="radio" name="correct_${id}" checked class="form-check-input">
+                            <input type="text" class="form-control form-control-sm rounded-pill border-0 bg-light" placeholder="Choice 1..." required>
+                        </div>
+                        <div class="choice-item mb-2 d-flex align-items-center gap-2">
+                            <input type="radio" name="correct_${id}" class="form-check-input">
+                            <input type="text" class="form-control form-control-sm rounded-pill border-0 bg-light" placeholder="Choice 2..." required>
+                        </div>
+                    </div>
+                `;
+                return div;
+            }
+
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.add-question-btn')) {
+                    const chapterCard = e.target.closest('.chapter-card');
+                    chapterCard.querySelector('.questions-container').appendChild(createQuestionElement());
+                    updateQuizJson(chapterCard);
+                }
+                if (e.target.closest('.remove-question-btn')) {
+                    const chapterCard = e.target.closest('.chapter-card');
+                    e.target.closest('.question-item').remove();
+                    updateQuizJson(chapterCard);
+                }
+            });
+
+            document.addEventListener('input', function (e) {
+                const chapterCard = e.target.closest('.chapter-card');
+                if (chapterCard && e.target.closest('.quiz-section')) updateQuizJson(chapterCard);
+            });
+
+            document.getElementById('addChapterBtn').addEventListener('click', function () {
+                const container = document.getElementById('chaptersContainer');
+                const lastChapter = container.querySelector('.chapter-card:last-child');
+                const newChapter = lastChapter.cloneNode(true);
+
+                // Reset inputs and increment index
+                newChapter.querySelectorAll('input, textarea').forEach(input => {
+                    if (input.type === 'radio') input.checked = false;
+                    else if (input.type !== 'hidden') input.value = '';
+                });
+                newChapter.querySelector('.questions-container').innerHTML = '';
+                newChapter.querySelector('.quiz-json-input').value = '';
+
+                const idxSpan = newChapter.querySelector('.chapter-index');
+                idxSpan.textContent = parseInt(idxSpan.textContent) + 1;
+
+                newChapter.classList.add('animate__animated', 'animate__slideInUp');
+                container.appendChild(newChapter);
+            });
+
+            // Initial init
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.chapter-card').forEach(updateQuizJson);
+            });
+        </script>
+
+        <style>
+            .uppercase {
+                text-transform: uppercase;
+            }
+
+            .tracking-wider {
+                letter-spacing: 0.1em;
+            }
+
+            .text-indigo {
+                color: #4e73df;
+            }
+
+            .bg-indigo-subtle {
+                background-color: #f8f9fc;
+            }
+
+            .border-indigo-subtle {
+                border-color: #4e73df22;
+            }
+
+            .smaller {
+                font-size: 0.75rem;
+            }
+        </style>
+    </section>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+package com.lms.fullstack.repository;
+
+import com.lms.fullstack.model.Quiz;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface QuizRepository extends JpaRepository<Quiz, Long> {
+}

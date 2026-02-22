@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title th:text="${course.title} + ' - LMSHub'">Course Detail</title>
+</head>
+
+<body>
+    <section>
+        <div class="container py-5">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Course Details</li>
+                </ol>
+            </nav>
+
+            <div class="row g-5">
+                <!-- Course Info -->
+                <div class="col-lg-8 animate__animated animate__fadeIn">
+                    <div class="course-header mb-5">
+                        <div class="position-relative mb-4">
+                            <img th:src="${course.thumbnail != null ? course.thumbnail : 'https://img.freepik.com/free-vector/video-streaming-concept-illustration_114360-1425.jpg'}"
+                                class="img-fluid rounded-4 shadow-lg w-100"
+                                style="max-height: 450px; object-fit: cover;" alt="Thumbnail">
+                            <div class="position-absolute bottom-0 start-0 m-4">
+                                <span class="badge bg-primary rounded-pill px-3 py-2 shadow">Best Seller</span>
+                            </div>
+                        </div>
+                        <h1 class="display-5 fw-bold mb-3" th:text="${course.title}">Course Title</h1>
+                        <div class="d-flex align-items-center gap-4 mb-4 text-muted small fw-medium">
+                            <div class="d-flex align-items-center gap-1">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <span class="text-dark">4.8</span> (2,450 ratings)
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <i class="bi bi-people"></i>
+                                <span th:text="${#lists.size(enrollments != null ? enrollments : {})} + ' students'">0
+                                    students</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <i class="bi bi-globe"></i>
+                                English
+                            </div>
+                        </div>
+                        <p class="lead text-muted" th:text="${course.description}">Course Description</p>
+                    </div>
+
+                    <div class="curriculum-section">
+                        <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                            <i class="bi bi-journal-code text-primary"></i>
+                            Course Curriculum
+                        </h4>
+                        <div class="accordion accordion-flush" id="courseAccordion">
+                            <div th:each="chapter, iter : ${course.chapters}"
+                                class="accordion-item border mb-3 rounded-4 overflow-hidden">
+                                <h2 class="accordion-header" th:id="'heading' + ${chapter.id}">
+                                    <button class="accordion-button collapsed py-4 px-4 bg-white" type="button"
+                                        data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${chapter.id}">
+                                        <div class="d-flex align-items-center justify-content-between w-100 me-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="chapter-number rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center me-3"
+                                                    style="width: 32px; height: 32px; font-weight: 700; font-size: 0.8rem;"
+                                                    th:text="${iter.index} + 1">1</div>
+                                                <span class="fw-bold" th:text="${chapter.title}">Chapter Title</span>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <span th:if="${isEnrolled}"
+                                                    class="badge bg-primary-subtle text-primary rounded-pill smaller fw-bold">
+                                                    <a th:href="@{'/courses/' + ${course.id} + '/learn'}"
+                                                        class="text-decoration-none">Start Learning</a>
+                                                </span>
+                                                <span class="text-muted small d-none d-md-inline">12:30</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div th:id="'collapse' + ${chapter.id}" class="accordion-collapse collapse"
+                                    th:aria-labelledby="'heading' + ${chapter.id}" data-bs-parent="#courseAccordion">
+                                    <div class="accordion-body bg-light-subtle px-4 py-4">
+                                        <div th:if="${isEnrolled}">
+                                            <div th:if="${chapter.videoUrl}"
+                                                class="ratio ratio-16x9 mb-4 rounded-4 shadow-sm overflow-hidden border">
+                                                <iframe th:src="${chapter.videoUrl}" allowfullscreen></iframe>
+                                            </div>
+                                            <div class="content-text text-secondary mb-4" th:text="${chapter.content}">
+                                            </div>
+
+                                            <div th:if="${chapter.assignment}"
+                                                class="assignment-box p-4 rounded-4 border-start border-4 border-warning bg-warning-subtle mb-4">
+                                                <h6 class="fw-bold mb-2 text-warning-emphasis"><i
+                                                        class="bi bi-pencil-square me-2"></i>Practical Assignment</h6>
+                                                <p class="mb-0 small" th:text="${chapter.assignment}"></p>
+                                            </div>
+
+                                            <div
+                                                class="d-flex flex-wrap justify-content-between align-items-center gap-3 pt-3 border-top">
+                                                <div th:if="${chapter.quiz}" class="d-flex align-items-center gap-3">
+                                                    <div class="rounded-circle bg-info-subtle text-info p-2">
+                                                        <i class="bi bi-patch-question"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="small fw-bold">Chapter Quiz</div>
+                                                        <a th:href="@{'/quizzes/' + ${chapter.quiz.id}}"
+                                                            class="smaller text-primary fw-bold text-decoration-none">Launch
+                                                            Quiz Now &rarr;</a>
+                                                    </div>
+                                                </div>
+                                                <form th:action="@{'/chapters/' + ${chapter.id} + '/complete'}"
+                                                    method="post" class="ms-auto">
+                                                    <button type="submit"
+                                                        class="btn btn-success rounded-pill px-4 btn-sm fw-bold">
+                                                        <i class="bi bi-check-circle me-2"></i>Complete Chapter
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div th:if="${!isEnrolled}" class="text-center py-5">
+                                            <div class="mb-3 text-muted">
+                                                <i class="bi bi-lock-fill display-4"></i>
+                                            </div>
+                                            <h5 class="fw-bold text-dark">Content Locked</h5>
+                                            <p class="text-muted small">Please enroll in the course to unlock chapters.
+                                            </p>
+                                            <a href="#enroll-sidebar"
+                                                class="btn btn-primary rounded-pill btn-sm px-4">Enroll Now</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Section -->
+                    <div class="mt-5 pt-5 border-top">
+                        <h4 class="fw-bold mb-4">What Students Say</h4>
+
+                        <div th:if="${isCompleted}" sec:authorize="isAuthenticated()"
+                            class="card border-0 bg-white shadow-sm p-4 mb-5 rounded-4 overflow-hidden position-relative">
+                            <div class="position-absolute top-0 end-0 m-4 text-primary opacity-10">
+                                <i class="bi bi-chat-quote-fill" style="font-size: 4rem;"></i>
+                            </div>
+                            <h5 class="fw-bold mb-3 position-relative z-1">Share Your Experience</h5>
+                            <form th:action="@{'/courses/' + ${course.id} + '/reviews'}" method="post"
+                                class="position-relative z-1">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Rating</label>
+                                    <div class="rating-input d-flex gap-2">
+                                        <select name="rating" class="form-select rounded-pill border-2" required>
+                                            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                                            <option value="4">⭐⭐⭐⭐ Very Good</option>
+                                            <option value="3">⭐⭐⭐ Good</option>
+                                            <option value="2">⭐⭐ Fair</option>
+                                            <option value="1">⭐ Poor</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">Review Description</label>
+                                    <textarea name="comment" class="form-control rounded-4 border-2" rows="4"
+                                        placeholder="How was the course?" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold">Post
+                                    Review</button>
+                            </form>
+                        </div>
+
+                        <div class="review-list">
+                            <div th:each="review : ${course.reviews}"
+                                class="mb-4 p-4 bg-white rounded-4 shadow-sm border">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img th:src="'https://ui-avatars.com/api/?name=' + ${review.user.fullName} + '&background=random'"
+                                            class="rounded-circle" style="width: 40px; height: 40px;">
+                                        <div>
+                                            <h6 class="fw-bold mb-0" th:text="${review.user.fullName}">Student Name</h6>
+                                            <span class="smaller text-muted"
+                                                th:text="${#temporals.format(review.createdAt, 'dd MMM yyyy')}">Date</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-warning small">
+                                        <i th:each="i : ${#numbers.sequence(1, 5)}" class="bi"
+                                            th:classappend="${i <= review.rating ? 'bi-star-fill' : 'bi-star'}"></i>
+                                    </div>
+                                </div>
+                                <p class="text-secondary small mb-0" th:text="${review.comment}">Comment</p>
+                            </div>
+                            <div th:if="${course.reviews == null || #lists.isEmpty(course.reviews)}"
+                                class="text-center py-5">
+                                <p class="text-muted">No reviews yet. Be the first to share your thoughts!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4" id="enroll-sidebar">
+                    <div class="card p-2 sticky-top border-0 shadow-lg rounded-5 overflow-hidden animate__animated animate__fadeInRight"
+                        style="top: 100px;">
+                        <div class="card-body p-4">
+                            <div th:if="${!isEnrolled}" class="text-center mb-4">
+                                <div class="display-4 fw-bold mb-2" th:text="'$' + ${course.price}">$0.00</div>
+                                <p class="text-muted small mb-4">30-Day Money-Back Guarantee</p>
+                                <form th:action="@{'/courses/' + ${course.id} + '/enroll'}" method="post">
+                                    <button type="submit"
+                                        class="btn btn-primary w-100 rounded-pill py-3 fw-bold fs-5 shadow-lg mb-3">
+                                        Enrol Now &rarr;
+                                    </button>
+                                </form>
+                                <div class="small text-muted">Full Lifetime Access</div>
+                            </div>
+
+                            <div th:if="${isEnrolled}"
+                                class="bg-success-subtle text-success p-4 rounded-4 text-center mb-4">
+                                <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3"
+                                    style="width: 48px; height: 48px;">
+                                    <i class="bi bi-check-lg fs-4"></i>
+                                </div>
+                                <h5 class="fw-bold mb-2">You're Enrolled!</h5>
+                                <p class="small mb-3">Continue where you left off in the curriculum.</p>
+                                <a th:href="@{'/courses/' + ${course.id} + '/learn'}"
+                                    class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow-sm">
+                                    <i class="bi bi-play-circle me-2"></i>Enter Learning Area
+                                </a>
+                            </div>
+
+                            <div class="mb-5 pt-4 border-top">
+                                <h6 class="fw-bold mb-3 small uppercase tracking-wide text-muted">Course Includes:</h6>
+                                <ul class="list-unstyled d-grid gap-3 small">
+                                    <li class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-play-btn text-primary fs-5"></i>
+                                        <span>7.5 hours on-demand video</span>
+                                    </li>
+                                    <li class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-file-earmark-arrow-down text-primary fs-5"></i>
+                                        <span>12 downloadable resources</span>
+                                    </li>
+                                    <li class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-patch-check text-primary fs-5"></i>
+                                        <span>Certificate of completion</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div th:if="${course.instructor != null}" class="instructor-card p-4 bg-light rounded-4">
+                                <h6 class="fw-bold mb-3 small text-muted">Your Instructor</h6>
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <img th:src="${course.instructor.profilePicture != null ? course.instructor.profilePicture : 'https://ui-avatars.com/api/?name=' + course.instructor.fullName}"
+                                        class="rounded-circle shadow-sm" style="width: 50px; height: 50px;">
+                                    <div>
+                                        <div class="fw-bold text-dark" th:text="${course.instructor.fullName}">
+                                            Instructor Name</div>
+                                        <div class="smaller text-muted">Senior Developer</div>
+                                    </div>
+                                </div>
+                                <p class="smaller text-muted mb-0">Expert with 10+ years experience in the industry.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

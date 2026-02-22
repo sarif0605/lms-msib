@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html th:fragment="layout(title, content)" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">LMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --bg-page: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+
+            /* Role Colors */
+            --student-primary: #6366f1;
+            --instructor-primary: #10b981;
+            --admin-primary: #f59e0b;
+        }
+
+        /* Role Theme Application */
+        body.theme-student {
+            --primary: var(--student-primary);
+            --primary-glow: rgba(99, 102, 241, 0.4);
+        }
+
+        body.theme-instructor {
+            --primary: var(--instructor-primary);
+            --primary-glow: rgba(16, 185, 129, 0.4);
+        }
+
+        body.theme-admin {
+            --primary: var(--admin-primary);
+            --primary-glow: rgba(245, 158, 11, 0.4);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #f8fafc 0%, #eef2ff 100%);
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.4s ease;
+            z-index: 1050;
+        }
+
+        .navbar-brand {
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #475569 !important;
+            padding: 0.5rem 1.2rem !important;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary) !important;
+            background: rgba(var(--primary-rgb), 0.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+            border: none;
+            box-shadow: 0 4px 15px 0 var(--primary-glow);
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            border-radius: 1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px 0 var(--primary-glow);
+        }
+
+        .card {
+            background: white;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link i {
+            font-size: 1.25rem;
+            margin-right: 1rem;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        /* Role Indicators */
+        .role-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+        }
+
+        .badge-student {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-instructor {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-admin {
+            background: #fef3c7;
+            color: #b45309;
+        }
+    </style>
+</head>
+
+<body
+    th:class="${#authentication.principal != 'anonymousUser' ? 'theme-' + #strings.toLowerCase(#authentication.principal.role) : 'theme-student'}">
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">LMS<span class="text-dark">Hub</span></a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Explore</a>
+                    </li>
+
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a class="nav-link" href="/login">Sign In</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a class="btn btn-primary ms-lg-3" href="/register">Join for Free</a>
+                    </li>
+
+                    <li class="nav-item dropdown ms-lg-3" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown"
+                            role="button" data-bs-toggle="dropdown">
+                            <div class="avatar-sm rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                                style="width: 32px; height: 32px; font-weight: 700; font-size: 0.8rem;"
+                                th:text="${#authentication.principal.fullName != null ? #strings.substring(#authentication.principal.fullName, 0, 1) : 'U'}">
+                                U</div>
+                            <span class="d-none d-sm-inline" th:text="${#authentication.principal.fullName}">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 rounded-4 mt-3">
+                            <li class="px-3 py-2 mb-2 border-bottom">
+                                <div class="small fw-bold text-dark" th:text="${#authentication.principal.fullName}">
+                                    Name</div>
+                                <div class="smaller text-muted" th:text="${#authentication.principal.email}">
+                                    email@example.com</div>
+                                <span
+                                    th:class="'role-badge mt-1 d-inline-block badge-' + ${#strings.toLowerCase(#authentication.principal.role)}"
+                                    th:text="${#authentication.principal.role}">STUDENT</span>
+                            </li>
+                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item rounded-3 py-2"
+                                    href="/dashboard"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</a></li>
+                            <li sec:authorize="hasRole('INSTRUCTOR')"><a class="dropdown-item rounded-3 py-2"
+                                    href="/dashboard"><i class="bi bi-person-workspace me-2"></i>Instructor Console</a>
+                            </li>
+                            <li sec:authorize="hasRole('STUDENT')"><a class="dropdown-item rounded-3 py-2"
+                                    href="/dashboard"><i class="bi bi-grid-fill me-2"></i>Student Dashboard</a></li>
+                            <li sec:authorize="hasRole('INSTRUCTOR')"><a class="dropdown-item rounded-3 py-2"
+                                    href="/instructor/courses/new"><i class="bi bi-plus-circle me-2"></i>New Course</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form th:action="@{/logout}" method="post">
+                                    <button type="submit" class="dropdown-item rounded-3 py-2 text-danger"><i
+                                            class="bi bi-box-arrow-right me-2"></i>Sign Out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main th:insert="${content}" class="flex-grow-1"></main>
+
+    <footer class="bg-white py-5 mt-5 border-top">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <a class="navbar-brand fw-bold mb-3 d-inline-block" href="/">LMSHub</a>
+                    <p class="text-muted small">Empowering the world through accessible education. Learn from the best,
+                        anywhere you are.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-4 mt-md-0">
+                    <p class="text-muted small mb-0">&copy; 2026 LMSHub. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

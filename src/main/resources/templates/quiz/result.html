@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Quiz Result - LMSHub</title>
+</head>
+
+<body>
+    <section>
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center">
+                    <div class="card p-5 shadow border-0 rounded-4">
+                        <div class="mb-4">
+                            <i th:if="${score >= 70}" class="bi bi-patch-check-fill text-success"
+                                style="font-size: 5rem;"></i>
+                            <i th:if="${score < 70}" class="bi bi-exclamation-circle-fill text-warning"
+                                style="font-size: 5rem;"></i>
+                        </div>
+
+                        <h2 class="fw-bold mb-2">Quiz Completed!</h2>
+                        <h4 class="text-muted mb-4" th:text="${quiz.title}">Quiz Title</h4>
+
+                        <div class="display-4 fw-bold mb-3"
+                            th:classappend="${score >= 70 ? 'text-success' : 'text-danger'}">
+                            <span th:text="${#numbers.formatDecimal(score, 1, 0)}">0</span>%
+                        </div>
+
+                        <p class="fs-5 mb-5">
+                            You got <span class="fw-bold" th:text="${correctAnswers}">0</span> out of
+                            <span class="fw-bold" th:text="${totalQuestions}">0</span> questions correct.
+                        </p>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-center">
+                            <a th:href="@{'/courses/' + ${quiz.chapter.course.id}}"
+                                class="btn btn-primary rounded-pill px-5 py-3 fw-bold">
+                                Back to Course
+                            </a>
+                            <a th:href="@{'/quizzes/' + ${quiz.id}}"
+                                class="btn btn-outline-primary rounded-pill px-5 py-3 fw-bold">
+                                Retake Quiz
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

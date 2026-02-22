@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>My Learning - LMSHub</title>
+</head>
+
+<body>
+    <section>
+        <div class="container py-5">
+            <!-- Personalized Hero -->
+            <div class="row mb-5 align-items-center animate__animated animate__fadeIn">
+                <div class="col-lg-8">
+                    <span class="role-badge badge-student mb-2 d-inline-block">Student Dashboard</span>
+                    <h1 class="fw-bold mb-2">Keep up the great work, <span
+                            th:text="${#authentication.principal.fullName}">Learner</span>!</h1>
+                    <p class="text-muted mb-0">You've completed <span class="text-primary fw-bold"
+                            th:text="${completedCourses}">0</span> courses so far. Your next milestone is just around
+                        the corner.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    <a href="/" class="btn btn-primary shadow-lg rounded-pill px-4">
+                        <i class="bi bi-compass-fill me-2"></i>Explore New Courses
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card border-0 h-100 bg-white shadow-sm p-4 overflow-hidden position-relative">
+                        <div class="position-relative z-1">
+                            <h6 class="text-muted mb-3">Overall Progress</h6>
+                            <h2 class="fw-bold mb-0" th:text="${overallProgress} + '%'">0%</h2>
+                            <div class="progress mt-3" style="height: 6px;">
+                                <div class="progress-bar bg-primary" th:style="'width: ' + ${overallProgress} + '%'">
+                                </div>
+                            </div>
+                        </div>
+                        <i class="bi bi-speedometer2 position-absolute end-0 bottom-0 mb-n3 me-n3 text-primary opacity-10"
+                            style="font-size: 8rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 h-100 bg-white shadow-sm p-4 overflow-hidden position-relative">
+                        <div class="position-relative z-1">
+                            <h6 class="text-muted mb-3">Completed Courses</h6>
+                            <h2 class="fw-bold mb-0" th:text="${completedCourses}">0</h2>
+                            <p class="small text-success mt-2 mb-0"><i class="bi bi-award-fill me-1"></i>Certificates
+                                earned</p>
+                        </div>
+                        <i class="bi bi-patch-check position-absolute end-0 bottom-0 mb-n3 me-n3 text-success opacity-10"
+                            style="font-size: 8rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 h-100 bg-white shadow-sm p-4 overflow-hidden position-relative">
+                        <div class="position-relative z-1">
+                            <h6 class="text-muted mb-3">Currently Learning</h6>
+                            <h2 class="fw-bold mb-0" th:text="${activeCourses}">0</h2>
+                            <p class="small text-info mt-2 mb-0"><i class="bi bi-clock-history me-1"></i>Active sessions
+                            </p>
+                        </div>
+                        <i class="bi bi-book position-absolute end-0 bottom-0 mb-n3 me-n3 text-info opacity-10"
+                            style="font-size: 8rem;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enrolled Courses -->
+            <h4 class="fw-bold mb-4">Your Courses</h4>
+            <div class="row g-4">
+                <div th:each="enrollment : ${enrollments}" class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 group">
+                        <div class="position-relative">
+                            <img th:src="${enrollment.course.thumbnail != null ? enrollment.course.thumbnail : 'https://img.freepik.com/free-vector/learning-concept-illustration_114360-6186.jpg'}"
+                                class="card-img-top" alt="Course Thumbnail" style="height: 180px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span th:if="${enrollment.isCompleted}"
+                                    class="badge bg-success rounded-pill px-3 shadow-sm">Completed</span>
+                            </div>
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold mb-2 h-100" th:text="${enrollment.course.title}">Course Title
+                            </h5>
+                            <div class="d-flex align-items-center gap-2 mb-4">
+                                <img th:src="'https://ui-avatars.com/api/?name=' + ${enrollment.course.instructor.fullName} + '&background=random'"
+                                    class="rounded-circle" style="width: 24px; height: 24px;">
+                                <span class="text-muted small"
+                                    th:text="${enrollment.course.instructor.fullName}">Instructor</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="smaller fw-bold text-muted">Progress</span>
+                                <span class="smaller fw-bold text-primary"
+                                    th:text="${#numbers.formatDecimal(enrollment.progressPercentage, 0, 0)} + '%'">0%</span>
+                            </div>
+                            <div class="progress mb-4" style="height: 6px; border-radius: 3px;">
+                                <div class="progress-bar" role="progressbar"
+                                    th:style="'width: ' + ${enrollment.progressPercentage} + '%'"
+                                    th:aria-valuenow="${enrollment.progressPercentage}" aria-valuemin="0"
+                                    aria-valuemax="100"></div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <a th:href="@{'/courses/' + ${enrollment.course.id}}"
+                                    class="btn btn-primary rounded-pill py-2 fw-bold">
+                                    <i class="bi bi-play-circle-fill me-2"></i>Continue
+                                </a>
+                                <form th:if="${enrollment.isCompleted}"
+                                    th:action="@{'/enrollments/' + ${enrollment.id} + '/certificate'}" method="post">
+                                    <button type="submit"
+                                        class="btn btn-outline-success w-100 rounded-pill py-2 small fw-bold mt-2">
+                                        <i class="bi bi-award me-2"></i>Certificate
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(enrollments)}" class="col-12 text-center py-5">
+                    <div class="card glass border-0 p-5 d-inline-block">
+                        <img src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg"
+                            style="width: 200px;" alt="Empty" class="mb-4">
+                        <h4 class="fw-bold">Your journey hasn't started yet</h4>
+                        <p class="text-muted">Thousands of courses are waiting for you.</p>
+                        <a href="/" class="btn btn-primary rounded-pill px-5 mt-3">Browse Catalog</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

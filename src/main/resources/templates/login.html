@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Welcome Back - LMSHub</title>
+</head>
+
+<body>
+    <section>
+        <div class="container py-5 mt-lg-5">
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <div class="card border-0 shadow-lg rounded-5 overflow-hidden animate__animated animate__fadeIn">
+                        <div class="row g-0">
+                            <!-- Visual Side -->
+                            <div
+                                class="col-md-6 d-none d-md-flex bg-primary align-items-center justify-content-center p-5 text-white text-center position-relative overflow-hidden">
+                                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-25"
+                                    style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');">
+                                </div>
+                                <div class="position-relative z-1">
+                                    <h2 class="display-6 fw-bold mb-4">Master Your Future</h2>
+                                    <p class="opacity-75 lead px-3">Join our community of lifelong learners and industry
+                                        experts.</p>
+                                    <div class="mt-5 d-flex justify-content-center gap-3">
+                                        <div class="rounded-circle bg-white bg-opacity-25 p-3"><i
+                                                class="bi bi-mortarboard fs-4"></i></div>
+                                        <div class="rounded-circle bg-white bg-opacity-25 p-3"><i
+                                                class="bi bi-rocket-takeoff fs-4"></i></div>
+                                        <div class="rounded-circle bg-white bg-opacity-25 p-3"><i
+                                                class="bi bi-safe fs-4"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Form Side -->
+                            <div class="col-md-6 p-4 p-lg-5 bg-white">
+                                <div class="text-center mb-5">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3413/3413535.png" alt="Logo"
+                                        class="mb-3" style="width: 48px;">
+                                    <h3 class="fw-bold text-dark">Welcome Back</h3>
+                                    <p class="text-muted small">Enter your credentials to access your console</p>
+                                </div>
+
+                                <form th:action="@{/login}" method="post">
+                                    <div th:if="${param.error}"
+                                        class="alert alert-danger border-0 rounded-4 py-3 small mb-4">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Invalid email or password.
+                                    </div>
+                                    <div th:if="${param.logout}"
+                                        class="alert alert-info border-0 rounded-4 py-3 small mb-4">
+                                        <i class="bi bi-info-circle-fill me-2"></i> You have been logged out.
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label
+                                            class="form-label small fw-bold text-muted uppercase tracking-wider">Email
+                                            Address</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0 rounded-start-4"><i
+                                                    class="bi bi-envelope text-muted"></i></span>
+                                            <input type="email" name="username"
+                                                class="form-control bg-light border-0 py-3 rounded-end-4"
+                                                placeholder="name@company.com" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <label
+                                                class="form-label small fw-bold text-muted uppercase tracking-wider mb-0">Password</label>
+                                            <a href="#"
+                                                class="text-primary smaller fw-bold text-decoration-none">Forgot?</a>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-0 rounded-start-4"><i
+                                                    class="bi bi-shield-lock text-muted"></i></span>
+                                            <input type="password" name="password"
+                                                class="form-control bg-light border-0 py-3 rounded-end-4"
+                                                placeholder="••••••••" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 form-check">
+                                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                                        <label class="form-check-label small text-muted" for="rememberMe">Keep me signed
+                                            in</label>
+                                    </div>
+
+                                    <button type="submit"
+                                        class="btn btn-primary w-100 py-3 rounded-4 fw-bold shadow-lg mb-4">
+                                        Sign In <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+
+                                    <p class="text-center text-muted smaller mb-0">
+                                        New on our platform? <a href="/register"
+                                            class="text-primary fw-bold text-decoration-none">Create an account</a>
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>
+            .uppercase {
+                text-transform: uppercase;
+            }
+
+            .tracking-wider {
+                letter-spacing: 0.1em;
+            }
+
+            .smaller {
+                font-size: 0.8rem;
+            }
+
+            .bg-primary {
+                background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+            }
+        </style>
+    </section>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Admin Dashboard - LMSHub</title>
+</head>
+
+<body>
+    <section>
+        <div class="container py-5">
+            <div class="header-section mb-5 animate__animated animate__fadeIn">
+                <span class="role-badge badge-admin mb-2 d-inline-block">System Administrator</span>
+                <h1 class="fw-bold">Platform Overview</h1>
+                <p class="text-muted">Monitor global LMS performance and manage system entities.</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="row g-4 mb-5 animate__animated animate__fadeInUp">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm p-3 rounded-4 bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <i class="bi bi-people fs-1 opacity-50"></i>
+                                <span class="badge bg-white text-primary rounded-pill small">+12%</span>
+                            </div>
+                            <h3 class="fw-bold mb-0" th:text="${totalUsers}">0</h3>
+                            <p class="small mb-0 opacity-75">Total Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm p-3 rounded-4 bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <i class="bi bi-journal-check fs-1 opacity-50"></i>
+                                <span class="badge bg-white text-success rounded-pill small">+5%</span>
+                            </div>
+                            <h3 class="fw-bold mb-0" th:text="${totalCourses}">0</h3>
+                            <p class="small mb-0 opacity-75">Active Courses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm p-3 rounded-4 bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <i class="bi bi-cart-check fs-1 opacity-50"></i>
+                                <span class="badge bg-white text-info rounded-pill small">Active</span>
+                            </div>
+                            <h3 class="fw-bold mb-0" th:text="${totalEnrollments}">0</h3>
+                            <p class="small mb-0 opacity-75">Total Enrollments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm p-3 rounded-4 bg-dark text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <i class="bi bi-cash-stack fs-1 opacity-50"></i>
+                                <span class="badge bg-primary rounded-pill small">Revenue</span>
+                            </div>
+                            <h3 class="fw-bold mb-0" th:text="'$' + ${totalRevenue}">$0.00</h3>
+                            <p class="small mb-0 opacity-75">Platform Earnings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-5">
+                <!-- User Management -->
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div
+                            class="card-header bg-white py-4 px-4 border-0 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0">Platform Users</h5>
+                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Export CSV</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4 border-0 small text-muted">USER</th>
+                                        <th class="border-0 small text-muted">ROLE</th>
+                                        <th class="border-0 small text-muted">JOINED</th>
+                                        <th class="border-0 small text-muted text-end pe-4">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="u : ${users}">
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img th:src="'https://ui-avatars.com/api/?name=' + ${u.fullName} + '&background=random'"
+                                                    class="rounded-circle" style="width: 38px; height: 38px;">
+                                                <div>
+                                                    <div class="fw-bold small" th:text="${u.fullName}">User Name</div>
+                                                    <div class="smaller text-muted" th:text="${u.email}">
+                                                        email@example.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="role-badge"
+                                                th:classappend="${'badge-' + #strings.toLowerCase(u.role)}"
+                                                th:text="${u.role}">STUDENT</span>
+                                        </td>
+                                        <td class="small text-muted"
+                                            th:text="${#temporals.format(u.createdAt, 'dd MMM yyyy')}">Date</td>
+                                        <td class="text-end pe-4">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light rounded-circle"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots-vertical"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end rounded-3 shadow border-0">
+                                                    <li><a class="dropdown-item py-2 small" href="#"><i
+                                                                class="bi bi-pencil me-2"></i>Edit Role</a></li>
+                                                    <li><a class="dropdown-item py-2 small text-danger" href="#"><i
+                                                                class="bi bi-trash me-2"></i>Suspend</a></li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Oversight -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                        <div class="card-header bg-white py-4 px-4 border-0">
+                            <h5 class="fw-bold mb-0">Recent Courses</h5>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <div th:each="c : ${allCourses}"
+                                class="list-group-item px-4 py-3 border-0 border-bottom d-flex align-items-center gap-3">
+                                <img th:src="${c.thumbnail != null ? c.thumbnail : 'https://placehold.co/600x400'}"
+                                    class="rounded-3 shadow-sm" style="width: 60px; height: 40px; object-fit: cover;">
+                                <div class="flex-grow-1 min-width-0">
+                                    <div class="fw-bold small text-truncate" th:text="${c.title}">Course Title</div>
+                                    <div class="smaller text-muted d-flex align-items-center gap-2">
+                                        <span th:text="${c.instructor.fullName}">Instructor</span>
+                                        <span class="opacity-25">|</span>
+                                        <span th:text="'$' + ${c.price}">$0.00</span>
+                                    </div>
+                                </div>
+                                <div class="badge bg-success-subtle text-success rounded-pill fw-normal px-2"
+                                    style="font-size: 0.6rem;">LIVE</div>
+                            </div>
+                        </div>
+                        <a href="#"
+                            class="card-footer bg-white text-center py-3 small text-primary fw-bold text-decoration-none border-0">
+                            View All Courses <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

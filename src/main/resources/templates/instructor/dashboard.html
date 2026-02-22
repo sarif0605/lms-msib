@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>Instructor Dashboard - LMSHub</title>
+</head>
+
+<body>
+    <section>
+        <div class="container py-5">
+            <div class="row mb-5 align-items-end animate__animated animate__fadeIn">
+                <div class="col">
+                    <span class="role-badge badge-instructor mb-2 d-inline-block">Instructor Console</span>
+                    <h1 class="fw-bold mb-1">Welcome back, <span
+                            th:text="${#authentication.principal.fullName}">Instructor</span>!</h1>
+                    <p class="text-muted mb-0">Here's what's happening with your courses today.</p>
+                </div>
+                <div class="col-auto">
+                    <a href="/instructor/courses/new" class="btn btn-primary shadow-lg d-flex align-items-center gap-2">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        <span>Create New Course</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Analytics Grid -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="card border-0 h-100 bg-white shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="rounded-4 p-3 bg-primary-subtle text-primary">
+                                <i class="bi bi-people-fill fs-4"></i>
+                            </div>
+                            <span class="badge bg-success-subtle text-success rounded-pill">+12%</span>
+                        </div>
+                        <h6 class="text-muted mb-2">Total Students</h6>
+                        <h2 class="fw-bold mb-0" th:text="${totalStudents}">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 h-100 bg-white shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="rounded-4 p-3 bg-success-subtle text-success">
+                                <i class="bi bi-journal-text fs-4"></i>
+                            </div>
+                        </div>
+                        <h6 class="text-muted mb-2">Total Courses</h6>
+                        <h2 class="fw-bold mb-0" th:text="${totalCourses}">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 h-100 bg-white shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="rounded-4 p-3 bg-warning-subtle text-warning">
+                                <i class="bi bi-star-fill fs-4"></i>
+                            </div>
+                        </div>
+                        <h6 class="text-muted mb-2">Average Rating</h6>
+                        <h2 class="fw-bold mb-0" th:text="${avgRating}">0.0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 h-100 bg-white shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="rounded-4 p-3 bg-info-subtle text-info">
+                                <i class="bi bi-wallet2 fs-4"></i>
+                            </div>
+                        </div>
+                        <h6 class="text-muted mb-2">Estimated Revenue</h6>
+                        <h2 class="fw-bold mb-0">$1,240</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Management -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Your Courses</h5>
+                    <div class="btn-group btn-group-sm rounded-pill border p-1 border-light-subtle">
+                        <button class="btn btn-light rounded-pill px-3 active">All</button>
+                        <button class="btn btn-light rounded-pill px-3">Active</button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr class="text-muted small text-uppercase">
+                                    <th class="ps-4 border-0">Course Name</th>
+                                    <th class="border-0">Created At</th>
+                                    <th class="border-0">Price</th>
+                                    <th class="border-0">Students</th>
+                                    <th class="border-0 text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="course : ${myCourses}">
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img th:src="${course.thumbnail != null ? course.thumbnail : 'https://img.freepik.com/free-vector/video-streaming-concept-illustration_114360-1425.jpg'}"
+                                                class="rounded-3 shadow-sm"
+                                                style="width: 50px; height: 50px; object-fit: cover;" alt="Thumbnail">
+                                            <div>
+                                                <div class="fw-bold text-dark" th:text="${course.title}">Course Title
+                                                </div>
+                                                <div class="smaller text-muted"
+                                                    th:text="${course.chapters != null ? course.chapters.size() + ' Chapters' : '0 Chapters'}">
+                                                    0 Chapters</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted small"
+                                        th:text="${#temporals.format(course.createdAt, 'dd MMM yyyy')}">Date</td>
+                                    <td>
+                                        <span class="fw-bold text-primary" th:text="'$' + ${course.price}">$0</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <i class="bi bi-person text-muted"></i>
+                                            <span class="small fw-medium"
+                                                th:text="${#lists.size(enrollments != null ? enrollments.?[course.id == __${course.id}__] : {})}">0</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm rounded-circle p-2" type="button"
+                                                data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul
+                                                class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 rounded-3">
+                                                <li><a class="dropdown-item rounded-2 py-2"
+                                                        th:href="@{'/courses/' + ${course.id}}"><i
+                                                            class="bi bi-eye me-2"></i>View Live</a></li>
+                                                <li><a class="dropdown-item rounded-2 py-2"
+                                                        th:href="@{'/instructor/courses/' + ${course.id} + '/edit'}"><i
+                                                            class="bi bi-pencil-square me-2"></i>Edit Course</a></li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li><a class="dropdown-item rounded-2 py-2 text-danger" href="#"><i
+                                                            class="bi bi-trash me-2"></i>Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(myCourses)}">
+                                    <td colspan="5" class="text-center py-5">
+                                        <img src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg"
+                                            style="width: 150px;" class="mb-3">
+                                        <h5 class="text-muted">You haven't created any courses yet.</h5>
+                                        <a href="/instructor/courses/new"
+                                            class="btn btn-primary mt-3 btn-sm rounded-pill px-4">Start Creating</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
